@@ -10,6 +10,7 @@ fs.readFile("./inputs/2.txt", "utf8", (err, data) => {
     return;
   }
   let sum = 0;
+  const power = [];
   const games = data
     .trim()
     .split("\n")
@@ -22,6 +23,7 @@ fs.readFile("./inputs/2.txt", "utf8", (err, data) => {
       .split(" ")
       .map((s) => s.replace(",", ""));
     let impossible = false;
+    const minCubes = {};
     for (let j = 0; j < pull.length; j += 2) {
       const color = pull[j + 1];
       const numColors = parseInt(pull[j]);
@@ -31,12 +33,29 @@ fs.readFile("./inputs/2.txt", "utf8", (err, data) => {
         (color === "green" && numColors > MAX_GREEN)
       ) {
         impossible = true;
-        break;
+      }
+      if (!minCubes[color]) {
+        minCubes[color] = numColors;
+      } else {
+        if (minCubes[color] < numColors) {
+          minCubes[color] = numColors;
+        }
       }
     }
     if (!impossible) {
       sum += gameNum;
     }
+    let productInit = 1;
+    const product = Object.keys(minCubes).reduce((accumulator, key) => {
+      return accumulator * minCubes[key];
+    }, productInit);
+    power.push(product);
   }
-  console.log(sum);
+  let powerSumInitial = 0;
+  const powerSum = power.reduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    powerSumInitial,
+  );
+  console.log("power sum: ", powerSum);
+  console.log("sum: ", sum);
 });
