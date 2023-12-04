@@ -15,6 +15,8 @@ fs.readFile("./inputs/3.txt", "utf8", (err, data) => {
   //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
   const isNumber = (s) => parseInt(s) === parseInt(s);
 
+  const gears = {};
+
   for (let x = 0; x < grid.length; x++) {
     for (let y = 0; y < grid[x].length; y++) {
       if (isNumber(grid[x][y])) {
@@ -28,9 +30,9 @@ fs.readFile("./inputs/3.txt", "utf8", (err, data) => {
         let rightBound = y;
         num = parseInt(num);
         let upper = Math.max(0, x - 1);
-        let lower = Math.min(grid.length, x + 1);
+        let lower = Math.min(grid.length - 1, x + 1);
         let symbolSeen = false;
-        outerLoop: for (let i = upper; i <= lower; i++) {
+        for (let i = upper; i <= lower; i++) {
           for (let j = leftBound; j <= rightBound; j++) {
             if (
               !isNumber(grid[i][j]) &&
@@ -38,19 +40,30 @@ fs.readFile("./inputs/3.txt", "utf8", (err, data) => {
               grid[i][j] !== undefined
             ) {
               symbolSeen = true;
-              break outerLoop;
+              if (grid[i][j] === "*") {
+                const address = `${i}-${j}`;
+                if (!gears[address]) {
+                  gears[address] = [];
+                }
+                gears[address].push(num);
+              }
             }
           }
         }
-        // console.log("Number:", num, "Position:", x, y);
-        // console.log("Boundaries:", leftBound, rightBound, upper, lower);
-        // console.log("Symbol Seen:", symbolSeen);
         if (symbolSeen) {
           sum += num;
         }
       }
     }
   }
+  let gearRatioSum = 0;
+  for (const address in gears) {
+    if (gears[address].length == 2) {
+      const product = gears[address][0] * gears[address][1];
+      gearRatioSum += product;
+    }
+  }
 
   console.log(sum);
+  console.log("gear ratio sum: ", gearRatioSum);
 });
